@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>מערכת קליטת בקשות תמיכה — מרכזי מו"פ אזורי 2026</title>
+<style>
+  :root {
+    --navy: #1a3a6b;
+    --navy-light: #e8f0fc;
+    --navy-mid: #aec4ee;
+    --green: #1a7a4a;
+    --green-light: #edf7f2;
+    --amber: #b86000;
+    --amber-light: #fff8e8;
+    --red: #8b1a1a;
+    --red-light: #fef2f2;
+    --bg: #f4f6fa;
+    --surface: #ffffff;
+    --surface2: #f0f3f9;
+    --border: rgba(0,0,0,0.1);
+    --border2: rgba(0,0,0,0.18);
+    --text: #1a1e2d;
+    --text2: #5a6070;
+    --text3: #8a92a0;
+    --radius: 10px;
+    --radius-lg: 14px;
+    --shadow: 0 2px 12px rgba(26,58,107,0.08);
+    --shadow-lg: 0 4px 24px rgba(26,58,107,0.12);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --navy: #5b8ee6;
+      --navy-light: #1a2540;
+      --navy-mid: #2a3d6a;
+      --green: #3db870;
+      --green-light: #0d2b1c;
+      --amber: #e8930a;
+      --amber-light: #2b1e00;
+      --red: #f07070;
+      --red-light: #2b0a0a;
+      --bg: #0f1117;
+      --surface: #1a1e2d;
+      --surface2: #242838;
+      --border: rgba(255,255,255,0.1);
+      --border2: rgba(255,255,255,0.18);
+      --text: #e8ecf4;
+      --text2: #8a92aa;
+      --text3: #5a6070;
+      --shadow: 0 2px 12px rgba(0,0,0,0.3);
+      --shadow-lg: 0 4px 24px rgba(0,0,0,0.4);
+    }
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Segoe UI', 'Arial', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    line-height: 1.6;
+    direction: rtl;
+  }
+
+  /* ── TOP NAV ── */
+  .topbar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    height: 60px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: var(--shadow);
+  }
+  .topbar-logo {
+    width: 38px; height: 38px;
+    background: var(--navy);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .topbar-logo svg { width: 22px; height: 22px; }
+  .topbar-title { font-size: 15px; font-weight: 600; color: var(--text); }
+  .topbar-sub { font-size: 12px; color: var(--text2); margin-top: 1px; }
+  .topbar-spacer { flex: 1; }
+  .topbar-badge {
+    font-size: 11px; padding: 4px 10px;
+    background: var(--navy-light); color: var(--navy);
+    border-radius: 20px; font-weight: 500;
+  }
+
+  /* ── LAYOUT ── */
+  .page { max-width: 900px; margin: 0 auto; padding: 2rem 1.5rem; }
+
+  /* ── STEP BAR ── */
+  .stepbar {
+    display: flex;
+    background: var(--surface);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border);
+    overflow: hidden;
+    margin-bottom: 1.75rem;
+    box-shadow: var(--shadow);
+  }
+  .step-btn {
+    flex: 1;
+    padding: 14px 8px;
+    background: none;
+    border: none;
+    border-left: 1px solid var(--border);
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--text2);
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    transition: background 0.2s;
+    font-family: inherit;
+    direction: rtl;
+  }
+  .step-btn:last-child { border-left: none; }
+  .step-btn:hover:not(.active):not(:disabled) { background: var(--surface2); }
+  .step-btn:disabled { cursor: default; opacity: 0.5; }
+  .step-btn.active { background: var(--navy-light); color: var(--navy); font-weight: 600; }
+  .step-btn.done { color: var(--green); }
+  .step-num {
+    width: 22px; height: 22px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 600; flex-shrink: 0;
+    background: var(--border);
+    color: var(--text2);
+    transition: all 0.2s;
+  }
+  .step-btn.active .step-num { background: var(--navy); color: #fff; }
+  .step-btn.done .step-num { background: var(--green); color: #fff; }
+
+  /* ── SCREENS ── */
+  .screen { display: none; animation: fadeIn 0.3s ease; }
+  .screen.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+  /* ── CARDS ── */
+  .card {
+    background: var(--surface);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border);
+    padding: 1.5rem;
+    margin-bottom: 1.25rem;
+    box-shadow: var(--shadow);
+  }
+  .card-title {
+    font-size: 13px; font-weight: 600; color: var(--text2);
+    display: flex; align-items: center; gap: 8px;
+    padding-bottom: 12px; margin-bottom: 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+  /* ── UPLOAD ── */
+  .upload-zone {
+    border: 2px dashed var(--border2);
+    border-radius: var(--radius-lg);
+    background: var(--surface);
+    padding: 3.5rem 2rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: var(--shadow);
+  }
+  .upload-zone:hover, .upload-zone.drag { border-color: var(--navy); background: var(--navy-light); }
+  .upload-icon {
+    width: 64px; height: 64px; margin: 0 auto 1.25rem;
+    background: var(--navy-light); border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .upload-zone h2 { font-size: 19px; font-weight: 600; margin-bottom: 8px; }
+  .upload-zone p { font-size: 14px; color: var(--text2); margin-bottom: 1.5rem; }
+  .upload-hint {
+    font-size: 12px; color: var(--text3);
+    background: var(--surface2); padding: 7px 16px;
+    border-radius: 20px; display: inline-block; margin-top: 12px;
+    border: 1px solid var(--border);
+  }
+  #fileInput { display: none; }
+
+  /* ── BUTTONS ── */
+  .btn {
+    padding: 10px 22px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border2);
+    background: var(--surface);
+    color: var(--text);
+    font-size: 14px; font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: inherit;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .btn:hover { background: var(--surface2); }
+  .btn:active { transform: scale(0.98); }
+  .btn.primary { background: var(--navy); color: #fff; border-color: var(--navy); }
+  .btn.primary:hover { background: #142d54; }
+  .btn.success { background: var(--green); color: #fff; border-color: var(--green); }
+  .btn.success:hover { background: #155f3a; }
+  .btn-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 1.5rem; }
+
+  /* ── DOC LIST (upload screen) ── */
+  .doc-list-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 1.5rem; }
+  .doc-list-item {
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 0; border-bottom: 1px solid var(--border);
+    font-size: 13px; color: var(--text2);
+  }
+  .doc-list-item svg { flex-shrink: 0; }
+
+  /* ── PROCESSING ── */
+  .file-badge {
+    background: var(--navy-light); border-radius: var(--radius);
+    padding: 10px 14px; display: flex; align-items: center; gap: 12px;
+    margin-bottom: 1.25rem;
+  }
+  .file-badge-name { font-size: 13px; font-weight: 600; color: var(--navy); }
+  .file-badge-meta { font-size: 11px; color: var(--text2); margin-top: 2px; }
+  .progress-track {
+    height: 6px; background: var(--surface2);
+    border-radius: 3px; overflow: hidden; margin-bottom: 1.5rem;
+    border: 1px solid var(--border);
+  }
+  .progress-fill {
+    height: 100%; background: var(--navy);
+    border-radius: 3px; transition: width 0.5s ease; width: 0%;
+  }
+  .proc-list { display: flex; flex-direction: column; gap: 8px; }
+  .proc-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 11px 14px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    transition: all 0.2s;
+  }
+  .proc-item.running { background: var(--navy-light); border-color: var(--navy-mid); }
+  .proc-item.ok { background: var(--green-light); border-color: #a5d5bc; }
+  .proc-item.warn { background: var(--amber-light); border-color: #f5c87a; }
+  .proc-icon {
+    width: 28px; height: 28px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; flex-shrink: 0; font-weight: 700;
+    background: var(--border); color: var(--text2);
+    transition: all 0.2s;
+  }
+  .proc-item.running .proc-icon { background: var(--navy); color: #fff; animation: spin 0.9s linear infinite; }
+  .proc-item.ok .proc-icon { background: var(--green); color: #fff; animation: none; }
+  .proc-item.warn .proc-icon { background: var(--amber); color: #fff; animation: none; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .proc-label { font-size: 13px; flex: 1; }
+  .proc-item.running .proc-label { font-weight: 600; color: var(--navy); }
+  .proc-status { font-size: 11px; color: var(--text2); text-align: left; white-space: nowrap; }
+
+  /* ── RESULTS GRID ── */
+  .results-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-bottom: 1.5rem; }
+  .full-col { grid-column: 1 / -1; }
+
+  /* ── DOC STATUS TABLE ── */
+  .doc-status-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 2rem; }
+  .doc-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 13px;
+  }
+  .doc-row:last-child { border-bottom: none; padding-bottom: 0; }
+  .badge {
+    flex-shrink: 0; font-size: 11px; padding: 3px 9px;
+    border-radius: 10px; font-weight: 600;
+  }
+  .badge.ok { background: var(--green-light); color: #1a5c35; }
+  .badge.missing { background: var(--red-light); color: var(--red); }
+  .badge.partial { background: var(--amber-light); color: #7a4a00; }
+  .alert-box {
+    margin-top: 12px; padding: 9px 14px;
+    background: var(--amber-light);
+    border-radius: var(--radius); font-size: 12px; color: #7a4a00;
+    display: flex; gap: 8px; align-items: flex-start;
+    border: 1px solid #f5c87a;
+  }
+
+  /* ── SCORE BARS ── */
+  .score-item { margin-bottom: 12px; }
+  .score-row {
+    display: flex; justify-content: space-between;
+    font-size: 12px; margin-bottom: 5px;
+  }
+  .score-row span:first-child { color: var(--text2); }
+  .score-row span:last-child { font-weight: 600; }
+  .bar-track {
+    height: 8px; background: var(--surface2);
+    border-radius: 4px; overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .bar-fill { height: 100%; border-radius: 4px; transition: width 1.2s cubic-bezier(.4,0,.2,1); }
+  .bar-fill.blue { background: var(--navy); }
+  .bar-fill.green { background: var(--green); }
+  .bar-fill.amber { background: var(--amber); }
+  .score-footer {
+    margin-top: 12px; padding: 9px 14px;
+    border-radius: var(--radius);
+    display: flex; justify-content: space-between; font-size: 13px;
+  }
+  .score-footer.blue { background: var(--navy-light); }
+  .score-footer.green { background: var(--green-light); }
+  .score-footer.amber { background: var(--amber-light); }
+  .score-footer .val { font-weight: 700; }
+  .score-footer.blue .lbl { color: #2a4a7b; }
+  .score-footer.blue .val { color: var(--navy); }
+  .score-footer.green .lbl { color: #1a5c35; }
+  .score-footer.green .val { color: var(--green); }
+  .score-footer.amber .lbl { color: #7a4a00; }
+  .score-footer.amber .val { color: var(--amber); }
+
+  /* ── TOTAL SCORE ── */
+  .score-circle-wrap {
+    display: flex; flex-direction: column; align-items: center;
+    padding: 1rem 0 0.5rem;
+  }
+  .circle-container {
+    width: 120px; height: 120px;
+    position: relative; margin-bottom: 14px;
+  }
+  .circle-svg { position: absolute; top: 0; right: 0; width: 120px; height: 120px; transform: rotate(-90deg); }
+  .circle-track { fill: none; stroke: var(--surface2); stroke-width: 10; }
+  .circle-fill {
+    fill: none; stroke: var(--navy); stroke-width: 10;
+    stroke-linecap: round;
+    stroke-dasharray: 307;
+    stroke-dashoffset: 307;
+    transition: stroke-dashoffset 1.8s cubic-bezier(.4,0,.2,1);
+  }
+  .circle-inner {
+    position: absolute; top: 0; right: 0;
+    width: 120px; height: 120px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+  }
+  .circle-num { font-size: 26px; font-weight: 700; color: var(--text); line-height: 1; }
+  .circle-lbl { font-size: 11px; color: var(--text2); margin-top: 3px; }
+  .sub-scores { width: 100%; display: flex; flex-direction: column; gap: 6px; }
+  .sub-score-row {
+    display: flex; justify-content: space-between;
+    padding: 6px 10px; background: var(--surface2);
+    border-radius: 6px; font-size: 12px;
+  }
+  .sub-score-row .lbl { color: var(--text2); }
+  .sub-score-row .val { font-weight: 600; }
+  .rec-pill {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 7px 16px; border-radius: 20px;
+    font-size: 13px; font-weight: 600;
+    margin-bottom: 1.25rem;
+  }
+  .rec-pill.ok { background: var(--green-light); color: #1a5c35; }
+  .rec-pill.warn { background: var(--amber-light); color: #7a4a00; }
+
+  /* ── REPORT ── */
+  .report-header-block {
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 1.25rem; margin-bottom: 1.5rem;
+    display: flex; justify-content: space-between; align-items: flex-start;
+  }
+  .report-header-block h2 { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+  .report-header-block p { font-size: 13px; color: var(--text2); }
+  .report-meta { text-align: left; font-size: 12px; color: var(--text2); line-height: 1.8; }
+  .report-meta strong { color: var(--text); }
+  .org-summary {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 1px; background: var(--border);
+    border-radius: var(--radius); overflow: hidden;
+    border: 1px solid var(--border);
+    margin-bottom: 1.5rem;
+  }
+  .org-cell {
+    background: var(--surface2);
+    padding: 12px 14px;
+    display: flex; flex-direction: column; gap: 3px;
+  }
+  .org-cell .lbl { font-size: 11px; color: var(--text2); }
+  .org-cell .val { font-size: 14px; font-weight: 600; }
+  .org-cell .val.highlight { color: var(--navy); }
+  .report-section { margin-bottom: 1.75rem; }
+  .report-section h3 {
+    font-size: 11px; font-weight: 700; color: var(--text2);
+    text-transform: uppercase; letter-spacing: 0.8px;
+    margin-bottom: 10px;
+  }
+  .report-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 9px 0; border-bottom: 1px solid var(--border); font-size: 13px;
+  }
+  .report-row:last-child { border-bottom: none; }
+  .score-tag {
+    padding: 3px 10px; border-radius: 10px;
+    font-size: 12px; font-weight: 600;
+  }
+  .score-tag.high { background: var(--green-light); color: #1a5c35; }
+  .score-tag.med { background: var(--amber-light); color: #7a4a00; }
+  .score-tag.low { background: var(--red-light); color: var(--red); }
+  .score-tag.neutral { background: var(--navy-light); color: var(--navy); }
+  .sub-detail {
+    padding: 7px 12px; background: var(--surface2);
+    border-radius: 6px; font-size: 12px; color: var(--text2);
+    margin: 3px 0 8px;
+  }
+  .recommendation-block {
+    background: var(--navy-light);
+    border-radius: var(--radius);
+    padding: 1.25rem 1.5rem;
+    border-right: 4px solid var(--navy);
+    margin-bottom: 1.5rem;
+  }
+  .recommendation-block h3 { font-size: 14px; font-weight: 700; color: var(--navy); margin-bottom: 8px; }
+  .recommendation-block p { font-size: 13px; color: #2a4a7b; line-height: 1.75; }
+  .signature-row {
+    display: flex; justify-content: space-around;
+    padding-top: 2rem; margin-top: 2rem;
+    border-top: 1px solid var(--border);
+  }
+  .sig-cell { display: flex; flex-direction: column; align-items: center; gap: 22px; }
+  .sig-line { width: 160px; border-bottom: 1px solid var(--border2); }
+  .sig-label { font-size: 12px; color: var(--text2); }
+  .print-note {
+    text-align: center; font-size: 12px; color: var(--text3);
+    margin-top: 1rem;
+  }
+
+  /* ── FOOTER ── */
+  .footer {
+    text-align: center; padding: 2rem;
+    font-size: 12px; color: var(--text3);
+    border-top: 1px solid var(--border);
+    margin-top: 2rem;
+  }
+
+  /* ── PRINT ── */
+  @media print {
+    .topbar, .stepbar, .btn-row, .footer { display: none !important; }
+    body { background: white; color: black; }
+    .card { box-shadow: none; border: 1px solid #ccc; }
+    .screen { display: block !important; }
+    #screen1, #screen2, #screen3 { display: none !important; }
+    #screen4 { display: block !important; }
+    .recommendation-block { background: #e8f0fc !important; -webkit-print-color-adjust: exact; }
+  }
+
+  @media (max-width: 640px) {
+    .results-grid { grid-template-columns: 1fr; }
+    .doc-status-grid { grid-template-columns: 1fr; }
+    .doc-list-grid { grid-template-columns: 1fr; }
+    .org-summary { grid-template-columns: 1fr 1fr; }
+    .report-header-block { flex-direction: column; gap: 10px; }
+    .signature-row { gap: 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- TOP NAVIGATION -->
+<nav class="topbar">
+  <div class="topbar-logo">
+    <svg viewBox="0 0 22 22" fill="none">
+      <rect x="2" y="2" width="7" height="7" rx="1.5" fill="white" opacity="0.9"/>
+      <rect x="13" y="2" width="7" height="7" rx="1.5" fill="white" opacity="0.6"/>
+      <rect x="2" y="13" width="7" height="7" rx="1.5" fill="white" opacity="0.6"/>
+      <rect x="13" y="13" width="7" height="7" rx="1.5" fill="white" opacity="0.9"/>
+    </svg>
+  </div>
+  <div>
+    <div class="topbar-title">מערכת קליטת בקשות תמיכה — מרכזי מו"פ אזורי</div>
+    <div class="topbar-sub">משרד החדשנות, המדע והטכנולוגיה · ועדת תמיכות</div>
+  </div>
+  <div class="topbar-spacer"></div>
+  <div class="topbar-badge">שנת תקציב 2026</div>
+</nav>
+
+<div class="page">
+
+  <!-- STEP BAR -->
+  <div class="stepbar">
+    <button class="step-btn active" id="step1" onclick="goStep(1)" aria-label="שלב 1">
+      <div class="step-num">1</div>העלאת קובץ
+    </button>
+    <button class="step-btn" id="step2" disabled onclick="goStep(2)" aria-label="שלב 2">
+      <div class="step-num">2</div>עיבוד ובדיקה
+    </button>
+    <button class="step-btn" id="step3" disabled onclick="goStep(3)" aria-label="שלב 3">
+      <div class="step-num">3</div>תוצאות וניקוד
+    </button>
+    <button class="step-btn" id="step4" disabled onclick="goStep(4)" aria-label="שלב 4">
+      <div class="step-num">4</div>דו"ח המלצה
+    </button>
+  </div>
+
+  <!-- ═══════════════════ SCREEN 1: UPLOAD ═══════════════════ -->
+  <div class="screen active" id="screen1">
+    <input type="file" id="fileInput" accept=".zip">
+    <div class="upload-zone" id="dropZone"
+         onclick="document.getElementById('fileInput').click()"
+         ondragover="handleDrag(event,true)"
+         ondragleave="handleDrag(event,false)"
+         ondrop="handleDrop(event)">
+      <div class="upload-icon">
+        <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
+          <path d="M15 5v16M8 12l7-7 7 7" stroke="#1a3a6b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M5 25h20" stroke="#1a3a6b" stroke-width="2.2" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <h2>גרור לכאן את תיק הבקשה (ZIP)</h2>
+      <p>יש להגיש את כל מסמכי הבקשה בתיק מרוכז אחד בפורמט ZIP<br>לפי הנדרש בקול הקורא לשנת 2026</p>
+      <button class="btn primary" onclick="event.stopPropagation(); document.getElementById('fileInput').click()">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 2v8M4 6l3-4 3 4" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 11h10" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
+        בחירת קובץ ZIP
+      </button>
+      <div class="upload-hint">קובץ ZIP בלבד · גודל מקסימלי 200MB</div>
+    </div>
+
+    <div class="card" style="margin-top:1.25rem">
+      <div class="card-title">
+        <div class="dot" style="background:var(--navy)"></div>
+        מסמכי חובה לפי הקול הקורא — סעיפים 28 ו-29(א) + מסמכים ייעודיים
+      </div>
+      <div class="doc-list-grid">
+        <div class="doc-list-item">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="2" y="1" width="10" height="12" rx="1.5" stroke="var(--text3)" stroke-width="1.2"/><path d="M4 5h6M4 7.5h6M4 10h4" stroke="var(--text3)" stroke-width="1.2" stroke-linecap="round"/></svg>
+          דיווח מדעי — פעילויות שנת הערכה 2025
+        </div>
+        <div class="doc-list-item">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="2" y="1" width="10" height="12" rx="1.5" stroke="var(--text3)" stroke-width="1.2"/><path d="M4 5h6M4 7.5h6M4 10h4" stroke="var(--text3)" stroke-width="1.2" stroke-linecap="round"/></svg>
+          שאלון מנהל מדעי לשנת הערכה 2025 (Excel)
+        </div>
+        <div class="doc-list-item">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="2" y="1" width="10" height="12" rx="1.5" stroke="var(--text3)" stroke-width="1.2"/><path d="M4 5h6M4 7.5h6M4 10h4" stroke="var(--text3)" stroke-width="1.2" stroke-linecap="round"/></svg>
+          תכנית עבודה מתוקצבת לשנת 2026
+        </div>
+        <div class="doc-list-item">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="2" y="1" width="10" height="12" rx="1.5" stroke="var(--text3)" stroke-width="1.2"/><path d="M4 5h6M4 7.5h6M4 10h4" stroke="var(--text3)" stroke-width="1.2" stroke-linecap="round"/></svg>
+          חסות אקדמית עדכנית (+ מקורית אם הוארכה)
+        </div>
+        <div class="doc-list-item">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="2" y="1" width="10" height="12" rx="1.5" stroke="var(--text3)" stroke-width="1.2"/><path d="M4 5h6M4 7.5h6M4 10h4" stroke="var(--text3)" stroke-width="1.2" stroke-linecap="round"/></svg>
+          רשימת הוועד המנהל
+        </div>
+        <div class="doc-list-item">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="2" y="1" width="10" height="12" rx="1.5" stroke="var(--text3)" stroke-width="1.2"/><path d="M4 5h6M4 7.5h6M4 10h4" stroke="var(--text3)" stroke-width="1.2" stroke-linecap="round"/></svg>
+          רשימת ועדת מחקר במרכז
+        </div>
+        <div class="doc-list-item">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="2" y="1" width="10" height="12" rx="1.5" stroke="var(--text3)" stroke-width="1.2"/><path d="M4 5h6M4 7.5h6M4 10h4" stroke="var(--text3)" stroke-width="1.2" stroke-linecap="round"/></svg>
+          הצהרה בעניין נהלי שכר, קיום דרגות ושכר
+        </div>
+        <div class="doc-list-item">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="2" y="1" width="10" height="12" rx="1.5" stroke="var(--text3)" stroke-width="1.2"/><path d="M4 5h6M4 7.5h6M4 10h4" stroke="var(--text3)" stroke-width="1.2" stroke-linecap="round"/></svg>
+          נהלי הגנה על ידע, פטנטים ומסחור
+        </div>
+        <div class="doc-list-item">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="2" y="1" width="10" height="12" rx="1.5" stroke="var(--text3)" stroke-width="1.2"/><path d="M4 5h6M4 7.5h6M4 10h4" stroke="var(--text3)" stroke-width="1.2" stroke-linecap="round"/></svg>
+          נהלי תנאי העסקה וקידום בדרגות ושכר
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════ SCREEN 2: PROCESSING ═══════════════════ -->
+  <div class="screen" id="screen2">
+    <div class="card">
+      <div class="card-title">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="2" y="1" width="10" height="12" rx="1.5" stroke="var(--navy)" stroke-width="1.5"/><path d="M4 5h6M4 7.5h3" stroke="var(--navy)" stroke-width="1.5" stroke-linecap="round"/></svg>
+        עיבוד הבקשה
+      </div>
+      <div class="file-badge" id="fileBadge">
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect x="3" y="2" width="16" height="18" rx="2" stroke="var(--navy)" stroke-width="1.5"/><path d="M7 8h8M7 11.5h8M7 15h5" stroke="var(--navy)" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <div>
+          <div class="file-badge-name" id="procFileName">קובץ_בקשה.zip</div>
+          <div class="file-badge-meta" id="procFileMeta">נתקבל ממתין לעיבוד...</div>
+        </div>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="mainBar"></div>
+      </div>
+      <div class="proc-list" id="procList">
+        <div class="proc-item" id="ps1">
+          <div class="proc-icon">◷</div>
+          <div class="proc-label">חילוץ תיק ZIP ובדיקת שלמות ארכיון</div>
+          <div class="proc-status">ממתין...</div>
+        </div>
+        <div class="proc-item" id="ps2">
+          <div class="proc-icon">◷</div>
+          <div class="proc-label">בדיקת נוכחות כל מסמכי חובה (סעיפים 28-29)</div>
+          <div class="proc-status">ממתין...</div>
+        </div>
+        <div class="proc-item" id="ps3">
+          <div class="proc-icon">◷</div>
+          <div class="proc-label">קריאה ואימות שאלון מנהל מדעי (Excel)</div>
+          <div class="proc-status">ממתין...</div>
+        </div>
+        <div class="proc-item" id="ps4">
+          <div class="proc-icon">◷</div>
+          <div class="proc-label">חישוב ציוני מצוינות מחקרית — תחום א׳ (47%)</div>
+          <div class="proc-status">ממתין...</div>
+        </div>
+        <div class="proc-item" id="ps5">
+          <div class="proc-icon">◷</div>
+          <div class="proc-label">חישוב ציוני פיתוח כלכלי-אזורי — תחום ב׳ (45%)</div>
+          <div class="proc-status">ממתין...</div>
+        </div>
+        <div class="proc-item" id="ps6">
+          <div class="proc-icon">◷</div>
+          <div class="proc-label">חישוב ציוני פיתוח חברתי-אזורי — תחום ג׳ (8%)</div>
+          <div class="proc-status">ממתין...</div>
+        </div>
+        <div class="proc-item" id="ps7">
+          <div class="proc-icon">◷</div>
+          <div class="proc-label">אימות מענקים תחרותיים ופרסומים מדעיים</div>
+          <div class="proc-status">ממתין...</div>
+        </div>
+        <div class="proc-item" id="ps8">
+          <div class="proc-icon">◷</div>
+          <div class="proc-label">הכנת דו"ח סיכום להמלצת הוועדה</div>
+          <div class="proc-status">ממתין...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════ SCREEN 3: RESULTS ═══════════════════ -->
+  <div class="screen" id="screen3">
+    <div class="results-grid">
+
+      <!-- Document Status -->
+      <div class="card full-col">
+        <div class="card-title">
+          <div class="dot" style="background:var(--navy)"></div>
+          מסמכי הגשה — סטטוס בדיקה
+        </div>
+        <div class="doc-status-grid">
+          <div class="doc-row"><span class="badge ok">הוגש ✓</span><span>דיווח מדעי לשנת 2025</span></div>
+          <div class="doc-row"><span class="badge ok">הוגש ✓</span><span>שאלון מנהל מדעי (Excel)</span></div>
+          <div class="doc-row"><span class="badge ok">הוגש ✓</span><span>תכנית עבודה מתוקצבת 2026</span></div>
+          <div class="doc-row"><span class="badge ok">הוגש ✓</span><span>חסות אקדמית עדכנית</span></div>
+          <div class="doc-row"><span class="badge ok">הוגש ✓</span><span>רשימת הוועד המנהל</span></div>
+          <div class="doc-row"><span class="badge missing">חסר ✗</span><span>רשימת ועדת מחקר במרכז</span></div>
+          <div class="doc-row"><span class="badge ok">הוגש ✓</span><span>הצהרת נהלי שכר</span></div>
+          <div class="doc-row"><span class="badge partial">חלקי ⚠</span><span>נהלי הגנה על ידע ופטנטים</span></div>
+          <div class="doc-row"><span class="badge ok">הוגש ✓</span><span>נהלי תנאי העסקה וקידום</span></div>
+        </div>
+        <div class="alert-box">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style="flex-shrink:0;margin-top:1px"><circle cx="7" cy="7" r="6" stroke="#b86000" stroke-width="1.2"/><path d="M7 4v3.5" stroke="#b86000" stroke-width="1.2" stroke-linecap="round"/><circle cx="7" cy="10" r="0.6" fill="#b86000"/></svg>
+          <span>נמצאו <strong>2 ליקויים</strong> הדורשים טיפול לפני הגשה סופית: (1) רשימת ועדת המחקר חסרה לחלוטין. (2) מסמך נהלי הגנה על ידע אינו כולל סעיף שיתוף חוקרים בהכנסות ממסחור (כנדרש בקול הקורא).</span>
+        </div>
+      </div>
+
+      <!-- Area A -->
+      <div class="card">
+        <div class="card-title">
+          <div class="dot" style="background:var(--navy)"></div>
+          א׳ · מצוינות במחקר יישומי <span style="margin-right:auto;color:var(--navy);font-weight:700">47%</span>
+        </div>
+        <div class="score-item">
+          <div class="score-row"><span>הכנסות ממחקרים תחרותיים</span><span>82 / 100</span></div>
+          <div class="bar-track"><div class="bar-fill blue" style="width:0%" data-w="82%"></div></div>
+        </div>
+        <div class="score-item">
+          <div class="score-row"><span>פרסומים מדעיים (Impact Factor)</span><span>74 / 100</span></div>
+          <div class="bar-track"><div class="bar-fill blue" style="width:0%" data-w="74%"></div></div>
+        </div>
+        <div class="score-item">
+          <div class="score-row"><span>הנחיית סטודנטים ממוסדות להשכלה גבוהה</span><span>60 / 100</span></div>
+          <div class="bar-track"><div class="bar-fill blue" style="width:0%" data-w="60%"></div></div>
+        </div>
+        <div class="score-item">
+          <div class="score-row"><span>הכנסה פר חוקר פעיל ממחקרים תחרותיים</span><span>68 / 100</span></div>
+          <div class="bar-track"><div class="bar-fill blue" style="width:0%" data-w="68%"></div></div>
+        </div>
+        <div class="score-item">
+          <div class="score-row"><span>פטנטים רשומים על שם המרכז</span><span>40 / 100</span></div>
+          <div class="bar-track"><div class="bar-fill blue" style="width:0%" data-w="40%"></div></div>
+        </div>
+        <div class="score-footer blue">
+          <span class="lbl">ציון תחום א׳ (47%)</span>
+          <span class="val">72.4 / 100 → 34.0 נק׳</span>
+        </div>
+      </div>
+
+      <!-- Area B -->
+      <div class="card">
+        <div class="card-title">
+          <div class="dot" style="background:var(--green)"></div>
+          ב׳ · פיתוח כלכלי-אזורי <span style="margin-right:auto;color:var(--green);font-weight:700">45%</span>
+        </div>
+        <div class="score-item">
+          <div class="score-row"><span>הכנסות משיתופי פעולה תעשייתיים</span><span>88 / 100</span></div>
+          <div class="bar-track"><div class="bar-fill green" style="width:0%" data-w="88%"></div></div>
+        </div>
+        <div class="score-item">
+          <div class="score-row"><span>כמות שיתופי פעולה פעילים</span><span>79 / 100</span></div>
+          <div class="bar-track"><div class="bar-fill green" style="width:0%" data-w="79%"></div></div>
+        </div>
+        <div class="score-item">
+          <div class="score-row"><span>צמיחה בהכנסות שיתופי פעולה (YoY)</span><span>65 / 100</span></div>
+          <div class="bar-track"><div class="bar-fill green" style="width:0%" data-w="65%"></div></div>
+        </div>
+        <div class="score-item">
+          <div class="score-row"><span>הכנסה פר חוקר — שיתופי פעולה</span><span>71 / 100</span></div>
+          <div class="bar-track"><div class="bar-fill green" style="width:0%" data-w="71%"></div></div>
+        </div>
+        <div class="score-footer green">
+          <span class="lbl">ציון תחום ב׳ (45%)</span>
+          <span class="val">77.8 / 100 → 35.0 נק׳</span>
+        </div>
+      </div>
+
+      <!-- Area C -->
+      <div class="card">
+        <div class="card-title">
+          <div class="dot" style="background:var(--amber)"></div>
+          ג׳ · פיתוח חברתי-אזורי <span style="margin-right:auto;color:var(--amber);font-weight:700">8%</span>
+        </div>
+        <div class="score-item">
+          <div class="score-row"><span>קורסים מקצועיים וחוגים מדעיים</span><span>90 / 100</span></div>
+          <div class="bar-track"><div class="bar-fill amber" style="width:0%" data-w="90%"></div></div>
+        </div>
+        <div class="score-item">
+          <div class="score-row"><span>ליווי תלמידי חטיבה ותיכון בעבודות חקר</span><span>85 / 100</span></div>
+          <div class="bar-track"><div class="bar-fill amber" style="width:0%" data-w="85%"></div></div>
+        </div>
+        <div class="score-item">
+          <div class="score-row"><span>כנסים שארגן המרכז</span><span>70 / 100</span></div>
+          <div class="bar-track"><div class="bar-fill amber" style="width:0%" data-w="70%"></div></div>
+        </div>
+        <div class="score-item">
+          <div class="score-row"><span>אירועי מדע פתוחים לציבור הרחב</span><span>78 / 100</span></div>
+          <div class="bar-track"><div class="bar-fill amber" style="width:0%" data-w="78%"></div></div>
+        </div>
+        <div class="score-footer amber">
+          <span class="lbl">ציון תחום ג׳ (8%)</span>
+          <span class="val">83.3 / 100 → 6.7 נק׳</span>
+        </div>
+      </div>
+
+      <!-- Total Score -->
+      <div class="card">
+        <div class="card-title">
+          <div class="dot" style="background:var(--navy)"></div>
+          ציון איכות כולל
+        </div>
+        <div class="score-circle-wrap">
+          <div class="circle-container">
+            <svg class="circle-svg" viewBox="0 0 120 120">
+              <circle class="circle-track" cx="60" cy="60" r="49"/>
+              <circle class="circle-fill" id="circFg" cx="60" cy="60" r="49"/>
+            </svg>
+            <div class="circle-inner">
+              <div class="circle-num" id="scoreNum">0</div>
+              <div class="circle-lbl">מתוך 100</div>
+            </div>
+          </div>
+          <div class="sub-scores">
+            <div class="sub-score-row">
+              <span class="lbl">א׳ · מחקר יישומי (47%)</span>
+              <span class="val" style="color:var(--navy)">34.0 נק׳</span>
+            </div>
+            <div class="sub-score-row">
+              <span class="lbl">ב׳ · כלכלי-אזורי (45%)</span>
+              <span class="val" style="color:var(--green)">35.0 נק׳</span>
+            </div>
+            <div class="sub-score-row">
+              <span class="lbl">ג׳ · חברתי-אזורי (8%)</span>
+              <span class="val" style="color:var(--amber)">6.7 נק׳</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="btn-row">
+      <button class="btn primary" onclick="goStep(4)">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="2" y="1" width="10" height="12" rx="1.5" stroke="white" stroke-width="1.3"/><path d="M4 5h6M4 7.5h6M4 10h3" stroke="white" stroke-width="1.3" stroke-linecap="round"/></svg>
+        יצירת דו"ח המלצה לוועדת התמיכות
+      </button>
+      <button class="btn" onclick="resetAll()">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M11 4A5 5 0 1 0 12 8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><path d="M12 2v3h-3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        העלאה חדשה
+      </button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════ SCREEN 4: REPORT ═══════════════════ -->
+  <div class="screen" id="screen4">
+    <div class="card" id="reportContent">
+
+      <div class="report-header-block">
+        <div>
+          <h2>דו"ח המלצה לוועדת התמיכות</h2>
+          <p>קול קורא — תמיכה במרכזי מו"פ אזורי ומגה מו"פ · שנת תקציב 2026</p>
+        </div>
+        <div class="report-meta">
+          מספר בקשה: <strong>MOP-2026-0047</strong><br>
+          תאריך עיבוד: <strong id="reportDate"></strong><br>
+          סטטוס: <strong style="color:var(--amber)">טרם אושרה סופית</strong>
+        </div>
+      </div>
+
+      <div class="org-summary">
+        <div class="org-cell">
+          <span class="lbl">שם הרשות המגישה</span>
+          <span class="val">מרכז מו"פ צפון הנגב — בית יוסף</span>
+        </div>
+        <div class="org-cell">
+          <span class="lbl">מנהל מדעי</span>
+          <span class="val">פרופ׳ דוד לוי</span>
+        </div>
+        <div class="org-cell">
+          <span class="lbl">סכום תמיכה מבוקש</span>
+          <span class="val">₪ 4,200,000</span>
+        </div>
+        <div class="org-cell">
+          <span class="lbl">ציון איכות כולל</span>
+          <span class="val highlight">75.7 / 100</span>
+        </div>
+      </div>
+
+      <div class="rec-pill ok">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" fill="#1a7a4a"/><path d="M4 7l2.5 2.5L10 4.5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        מומלץ לאישור — בכפוף להגשת מסמכים חסרים
+      </div>
+
+      <div class="report-section">
+        <h3>מסמכי הגשה — סטטוס</h3>
+        <div class="report-row"><span>דיווח מדעי לשנת 2025</span><span class="score-tag high">הוגש ✓</span></div>
+        <div class="report-row"><span>שאלון מנהל מדעי (Excel)</span><span class="score-tag high">הוגש ✓</span></div>
+        <div class="report-row"><span>תכנית עבודה מתוקצבת לשנת 2026</span><span class="score-tag high">הוגש ✓</span></div>
+        <div class="report-row"><span>חסות אקדמית עדכנית</span><span class="score-tag high">הוגש ✓</span></div>
+        <div class="report-row"><span>רשימת הוועד המנהל</span><span class="score-tag high">הוגש ✓</span></div>
+        <div class="report-row"><span>רשימת ועדת מחקר במרכז</span><span class="score-tag low">לא הוגש ✗</span></div>
+        <div class="report-row"><span>הצהרת נהלי שכר וקיום דרגות</span><span class="score-tag high">הוגש ✓</span></div>
+        <div class="report-row"><span>נהלי הגנה על ידע, פטנטים ומסחור</span><span class="score-tag med">חלקי ⚠</span></div>
+        <div class="report-row"><span>נהלי תנאי העסקה וקידום בדרגות</span><span class="score-tag high">הוגש ✓</span></div>
+      </div>
+
+      <div class="report-section">
+        <h3>ניקוד לפי תבחינים — שאלון מנהל מדעי</h3>
+
+        <div class="report-row">
+          <span style="font-weight:600">א׳ — מצוינות במחקר יישומי (47%)</span>
+          <span class="score-tag neutral">72.4 / 100 · 34.0 נק׳</span>
+        </div>
+        <div class="sub-detail">
+          הכנסות ממחקרים תחרותיים: ₪1,800,000 · פרסומים מדעיים: 12 (Impact Factor מצטבר: 38.4) · פטנטים רשומים: 1 · סטודנטים מונחים: 8 (6 לתואר שני, 2 לשלישי)
+        </div>
+
+        <div class="report-row">
+          <span style="font-weight:600">ב׳ — פיתוח כלכלי-אזורי (45%)</span>
+          <span class="score-tag neutral">77.8 / 100 · 35.0 נק׳</span>
+        </div>
+        <div class="sub-detail">
+          הכנסות שיתופי פעולה: ₪2,400,000 · כמות שיתופי פעולה: 23 עסקאות · צמיחה YoY: +12% · עסקאות העברת ידע: 3 חוזים
+        </div>
+
+        <div class="report-row">
+          <span style="font-weight:600">ג׳ — פיתוח חברתי-אזורי (8%)</span>
+          <span class="score-tag neutral">83.3 / 100 · 6.7 נק׳</span>
+        </div>
+        <div class="sub-detail">
+          כנסים: 4 · חוגים וקורסים מדעיים: 9 · אירועי מדע פתוחים לציבור: 6 · ליווי תלמידים: 3 מוסדות חינוכיים
+        </div>
+      </div>
+
+      <div class="report-section">
+        <h3>ביצועים בולטים</h3>
+        <div class="report-row"><span>מענקי מחקר תחרותיים שהתקבלו (2024)</span><span class="score-tag high">5 מענקים · ₪1.8M</span></div>
+        <div class="report-row"><span>פרסומים בכתבי עת מדעיים עם שיפוט</span><span class="score-tag high">12 פרסומים</span></div>
+        <div class="report-row"><span>שיתופי פעולה תעשייתיים פעילים</span><span class="score-tag high">23 שותפויות</span></div>
+        <div class="report-row"><span>עסקאות העברת ידע ומסחור</span><span class="score-tag med">3 עסקאות</span></div>
+        <div class="report-row"><span>חוקרים פעילים (≥50% משרה)</span><span class="score-tag high">11 חוקרים</span></div>
+        <div class="report-row"><span>חוקרים חדשים (שנתיים ראשונות)</span><span class="score-tag med">2 חוקרים</span></div>
+        <div class="report-row"><span>תמיכת רשויות מקומיות (3 שנים)</span><span class="score-tag high">₪750,000 מצטבר</span></div>
+      </div>
+
+      <div class="recommendation-block">
+        <h3>המלצת הצוות המקצועי</h3>
+        <p>
+          על בסיס בדיקת המסמכים המוגשים וניתוח נתוני השאלון למנהל המדעי, הצוות המקצועי <strong>ממליץ לאשר</strong> את הבקשה לתמיכה בכפוף לתנאים הבאים: (1) הגשת רשימת ועדת המחקר המרכזית בתוך 14 יום; (2) השלמת מסמך נהלי הגנה על ידע עם סעיף שיתוף חוקרים בהכנסות ממסחור כנדרש בסעיף 29(א) לנוהל.
+          <br><br>
+          ציון האיכות הכולל של <strong>75.7</strong> ממצב את המרכז בטווח הגבוה בקרב המגישים בקול קורא זה. בולטים במיוחד ביצועי תחום ב׳ (פיתוח כלכלי-אזורי) עם 23 שיתופי פעולה תעשייתיים פעילים, וכן הפעילות החברתית-אזורית. מוצע לדון בהיקף התמיכה לאור היקף הפעילות הנוכחי.
+        </p>
+      </div>
+
+      <div class="signature-row">
+        <div class="sig-cell">
+          <div class="sig-line"></div>
+          <div class="sig-label">מנהלת תחום תמיכות</div>
+        </div>
+        <div class="sig-cell">
+          <div class="sig-line"></div>
+          <div class="sig-label">סמנכ"ל מחקר ופיתוח</div>
+        </div>
+        <div class="sig-cell">
+          <div class="sig-line"></div>
+          <div class="sig-label">יו"ר ועדת התמיכות</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn primary" onclick="window.print()">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="2" y="5" width="10" height="7" rx="1" stroke="white" stroke-width="1.3"/><path d="M4 5V3h6v2" stroke="white" stroke-width="1.3"/><path d="M4 9h6" stroke="white" stroke-width="1.3" stroke-linecap="round"/></svg>
+        הדפסה / שמירה כ-PDF
+      </button>
+      <button class="btn" onclick="goStep(3)">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 3L4 7l5 4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        חזרה לתוצאות
+      </button>
+      <button class="btn" onclick="resetAll()">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M11 4A5 5 0 1 0 12 8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><path d="M12 2v3h-3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        בקשה חדשה
+      </button>
+    </div>
+    <div class="print-note">להדפסה: Ctrl+P / Cmd+P · מומלץ להגדיר "שמור כ-PDF" בדפדפן</div>
+  </div>
+
+</div>
+
+<footer class="footer">
+  משרד החדשנות, המדע והטכנולוגיה · מערכת קליטת תמיכות 2026 · גרסת הדגמה
+</footer>
+
+<script>
+  /* ─── STATE ─── */
+  let unlockedSteps = [1];
+  let currentStep = 1;
+  let uploadedFileName = '';
+
+  /* ─── STEP NAVIGATION ─── */
+  function goStep(n) {
+    if (!unlockedSteps.includes(n)) return;
+    currentStep = n;
+    document.querySelectorAll('.screen').forEach((s, i) => s.classList.toggle('active', i + 1 === n));
+    document.querySelectorAll('.step-btn').forEach((b, i) => {
+      b.classList.remove('active', 'done');
+      if (i + 1 === n) b.classList.add('active');
+      else if (i + 1 < n) b.classList.add('done');
+    });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (n === 3) animateBars();
+    if (n === 4) {
+      animateCircle();
+      document.getElementById('reportDate').textContent = new Date().toLocaleDateString('he-IL', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    }
+  }
+
+  function unlockAndGoStep(n) {
+    for (let i = 1; i <= n; i++) {
+      if (!unlockedSteps.includes(i)) unlockedSteps.push(i);
+      document.getElementById('step' + i).disabled = false;
+    }
+    goStep(n);
+  }
+
+  function resetAll() {
+    unlockedSteps = [1];
+    [2, 3, 4].forEach(i => { document.getElementById('step' + i).disabled = true; });
+    document.querySelectorAll('.proc-item').forEach(el => {
+      el.className = 'proc-item';
+      el.querySelector('.proc-icon').textContent = '◷';
+      el.querySelector('.proc-status').textContent = 'ממתין...';
+    });
+    document.getElementById('mainBar').style.width = '0%';
+    document.querySelectorAll('.bar-fill').forEach(b => b.style.width = '0%');
+    document.getElementById('circFg').style.strokeDashoffset = '307';
+    document.getElementById('scoreNum').textContent = '0';
+    goStep(1);
+  }
+
+  /* ─── FILE UPLOAD ─── */
+  document.getElementById('fileInput').addEventListener('change', function () {
+    if (this.files[0]) startProcess(this.files[0]);
+  });
+
+  function handleDrag(e, entering) {
+    e.preventDefault();
+    document.getElementById('dropZone').classList.toggle('drag', entering);
+  }
+
+  function handleDrop(e) {
+    e.preventDefault();
+    document.getElementById('dropZone').classList.remove('drag');
+    const file = e.dataTransfer.files[0];
+    if (file) startProcess(file);
+  }
+
+  function startProcess(file) {
+    uploadedFileName = file ? file.name : 'BeerSheva_MOP_2026.zip';
+    const size = file ? (file.size / (1024 * 1024)).toFixed(1) + ' MB' : '47.3 MB';
+    const now = new Date().toLocaleString('he-IL');
+    document.getElementById('procFileName').textContent = uploadedFileName;
+    document.getElementById('procFileMeta').textContent = `${size} · נתקבל ${now}`;
+    unlockAndGoStep(2);
+    runProcessing();
+  }
+
+  /* ─── PROCESSING ANIMATION ─── */
+  const procData = [
+    { id: 'ps1', pct: 12, msg: 'חולץ בהצלחה — 47 קבצים, 12 תיקיות', cls: 'ok' },
+    { id: 'ps2', pct: 27, msg: '7/9 מסמכים נמצאו — 2 ליקויים', cls: 'warn' },
+    { id: 'ps3', pct: 42, msg: '12 לשוניות, 847 שורות נתונים עובדו', cls: 'ok' },
+    { id: 'ps4', pct: 57, msg: 'מצוינות מחקרית: 72.4 / 100', cls: 'ok' },
+    { id: 'ps5', pct: 72, msg: 'פיתוח כלכלי-אזורי: 77.8 / 100', cls: 'ok' },
+    { id: 'ps6', pct: 82, msg: 'פיתוח חברתי: 83.3 / 100', cls: 'ok' },
+    { id: 'ps7', pct: 93, msg: '5 מענקים ו-12 פרסומים אומתו בהצלחה', cls: 'ok' },
+    { id: 'ps8', pct: 100, msg: 'דו"ח סיכום מוכן לוועדה', cls: 'ok' }
+  ];
+
+  async function runProcessing() {
+    const bar = document.getElementById('mainBar');
+    for (const step of procData) {
+      const el = document.getElementById(step.id);
+      el.classList.add('running');
+      el.querySelector('.proc-icon').style.animation = 'spin 0.9s linear infinite';
+      el.querySelector('.proc-icon').textContent = '↻';
+      el.querySelector('.proc-status').textContent = 'מעבד...';
+      bar.style.width = step.pct + '%';
+      await delay(700 + Math.random() * 500);
+      el.classList.remove('running');
+      el.classList.add(step.cls);
+      el.querySelector('.proc-icon').style.animation = 'none';
+      el.querySelector('.proc-icon').textContent = step.cls === 'ok' ? '✓' : '⚠';
+      el.querySelector('.proc-status').textContent = step.msg;
+    }
+    await delay(800);
+    unlockAndGoStep(3);
+  }
+
+  function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+  /* ─── BAR ANIMATIONS (results screen) ─── */
+  function animateBars() {
+    setTimeout(() => {
+      document.querySelectorAll('.bar-fill[data-w]').forEach(bar => {
+        bar.style.width = bar.getAttribute('data-w');
+      });
+    }, 100);
+  }
+
+  /* ─── CIRCLE ANIMATION (results screen) ─── */
+  function animateCircle() {
+    const circ = document.getElementById('circFg');
+    const numEl = document.getElementById('scoreNum');
+    const target = 75.7;
+    const circumference = 307;
+    setTimeout(() => {
+      circ.style.strokeDashoffset = circumference - (circumference * target / 100);
+      let cur = 0;
+      const iv = setInterval(() => {
+        cur = Math.min(cur + 1.5, target);
+        numEl.textContent = cur.toFixed(cur < target ? 0 : 1);
+        if (cur >= target) clearInterval(iv);
+      }, 22);
+    }, 200);
+  }
+</script>
+</body>
+</html>
