@@ -443,17 +443,6 @@
     margin-top: 2rem;
   }
 
-  /* ── PRINT ── */
-  @media print {
-    .topbar, .stepbar, .btn-row, .footer { display: none !important; }
-    body { background: white; color: black; }
-    .card { box-shadow: none; border: 1px solid #ccc; }
-    .screen { display: block !important; }
-    #screen1, #screen2, #screen3 { display: none !important; }
-    #screen4 { display: block !important; }
-    .recommendation-block { background: #e8f0fc !important; -webkit-print-color-adjust: exact; }
-  }
-
   @media (max-width: 640px) {
     .results-grid { grid-template-columns: 1fr; }
     .doc-status-grid { grid-template-columns: 1fr; }
@@ -462,6 +451,99 @@
     .report-header-block { flex-direction: column; gap: 10px; }
     .signature-row { gap: 1.5rem; }
   }
+
+  /* ── PRINT OVERLAY ── */
+  #printOverlay {
+    display:none; position:fixed; inset:0; z-index:9999;
+    background:rgba(8,14,30,.78); overflow-y:auto;
+  }
+  #printOverlay.visible { display:block; }
+  #printToolbar {
+    background:#1a3a6b; color:#fff; padding:11px 24px;
+    display:flex; align-items:center; justify-content:space-between; gap:12px;
+    position:sticky; top:0; z-index:2; font-family:inherit;
+  }
+  #printToolbar span { font-size:13px; opacity:.88; }
+  .tbtn {
+    border:none; padding:8px 18px; border-radius:6px;
+    font-size:13px; font-weight:700; cursor:pointer; font-family:inherit;
+  }
+  .tbtn-print { background:#fff; color:#1a3a6b; }
+  .tbtn-close  { background:transparent; color:#fff; border:1px solid rgba(255,255,255,.35) !important; }
+  #printDoc {
+    background:#fff; max-width:794px; margin:24px auto 48px;
+    border-radius:8px; overflow:hidden; box-shadow:0 8px 48px rgba(0,0,0,.38);
+    direction:rtl; font-family:'Segoe UI',Arial,sans-serif;
+    font-size:13px; line-height:1.65; color:#1a1e2d;
+  }
+  .rh { background:#1a3a6b; padding:22px 28px; display:flex; align-items:center; justify-content:space-between; gap:16px; }
+  .rh-logo { width:48px;height:48px;background:rgba(255,255,255,.15);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0; }
+  .rh-logo svg { width:28px;height:28px; }
+  .rh-title { color:#fff;flex:1; }
+  .rh-title h1 { font-size:16px;font-weight:700;line-height:1.3; }
+  .rh-title p  { font-size:11px;opacity:.75;margin-top:3px; }
+  .rh-meta { color:#fff;text-align:left;font-size:11px;opacity:.85;line-height:1.9;flex-shrink:0; }
+  .rh-meta strong { opacity:1; }
+  .rp-conf { background:#fef3cd;border-bottom:1px solid #f0c14b;padding:6px 28px;font-size:11px;color:#7a5800;display:flex;align-items:center;gap:8px;font-weight:600; }
+  .rp-inner { padding:2rem 2.6rem; }
+  .rp-org { display:grid;grid-template-columns:repeat(4,1fr);border:1px solid #d8dde8;border-radius:6px;overflow:hidden;margin-bottom:1.4rem; }
+  .rp-ocell { padding:10px 14px;background:#f5f7fc; }
+  .rp-ocell:not(:last-child) { border-left:1px solid #d8dde8; }
+  .rp-ocell .lbl { font-size:10px;color:#7a8090;margin-bottom:3px; }
+  .rp-ocell .val { font-size:13px;font-weight:700; }
+  .rp-ocell .val.hl { color:#1a3a6b; }
+  .rp-pill { display:inline-flex;align-items:center;gap:7px;padding:7px 16px;border-radius:20px;font-size:12px;font-weight:700;background:#edf7f2;color:#0e5c30;border:1px solid #a5d5bc;margin-bottom:1.2rem; }
+  .rp-sec { margin-bottom:1.5rem; }
+  .rp-sec-h { font-size:10px;font-weight:700;color:#7a8090;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;padding-bottom:5px;border-bottom:1.5px solid #e2e6ee; }
+  .rp-tbl { width:100%;border-collapse:collapse;font-size:12px; }
+  .rp-tbl th { background:#f5f7fc;padding:7px 10px;text-align:right;font-weight:600;color:#5a6070;border-bottom:1.5px solid #d8dde8;font-size:11px; }
+  .rp-tbl td { padding:7px 10px;border-bottom:1px solid #eef0f4; }
+  .rp-tbl tr:last-child td { border-bottom:none; }
+  .rbk { display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:700; }
+  .rbk.ok   { background:#edf7f2;color:#0e5c30; }
+  .rbk.miss { background:#fef2f2;color:#7a1a1a; }
+  .rbk.par  { background:#fff8e8;color:#7a4a00; }
+  .rp-sarea { margin-bottom:1.2rem;border:1px solid #d8dde8;border-radius:6px;overflow:hidden; }
+  .rp-sh { display:flex;align-items:center;justify-content:space-between;padding:9px 14px;background:#f5f7fc;border-bottom:1px solid #d8dde8; }
+  .rp-sh .t { font-size:13px;font-weight:700; }
+  .rp-sh .w { font-size:11px;color:#7a8090; }
+  .rp-sh .s { font-size:13px;font-weight:700; }
+  .rp-rows { padding:8px 14px 4px; }
+  .rp-row { display:flex;align-items:center;gap:10px;padding:5px 0;border-bottom:1px solid #eef0f4; }
+  .rp-row:last-child { border-bottom:none; }
+  .rp-row .l { font-size:12px;color:#3a4050;flex:1; }
+  .rp-row .v { font-size:12px;font-weight:700;white-space:nowrap;min-width:70px;text-align:left; }
+  .rp-bar { flex:1;height:6px;background:#e2e6ee;border-radius:3px;overflow:hidden;max-width:120px; }
+  .rp-bf  { height:100%;border-radius:3px; }
+  .rp-note { font-size:11px;color:#6a7080;background:#f9fafc;padding:6px 14px;border-top:1px solid #eef0f4; }
+  .rp-hgrid { display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:1.4rem; }
+  .rp-hcell { border:1px solid #d8dde8;border-radius:6px;padding:10px 14px;background:#f9faff; }
+  .rp-hcell .lbl { font-size:10px;color:#7a8090;margin-bottom:4px; }
+  .rp-hcell .val { font-size:15px;font-weight:700;color:#1a3a6b; }
+  .rp-hcell .sub { font-size:11px;color:#5a6070;margin-top:2px; }
+  .rp-conds { background:#fff8e8;border:1px solid #f0c14b;border-radius:6px;padding:12px 16px;margin-bottom:1.4rem; }
+  .rp-conds h3 { font-size:12px;font-weight:700;color:#7a4a00;margin-bottom:7px; }
+  .rp-conds ol { padding-right:18px;font-size:12px;color:#5a3a10;line-height:1.75; }
+  .rp-rec { background:#e8f0fc;border-radius:6px;padding:14px 18px;border-right:4px solid #1a3a6b;margin-bottom:1.4rem; }
+  .rp-rec h3 { font-size:13px;font-weight:700;color:#1a3a6b;margin-bottom:7px; }
+  .rp-rec p  { font-size:12px;color:#2a3a5a;line-height:1.75; }
+  .rp-sigsec { margin-top:2rem;padding-top:1.4rem;border-top:1.5px solid #d8dde8; }
+  .rp-sig-title { font-size:10px;font-weight:700;color:#7a8090;text-transform:uppercase;letter-spacing:1px;margin-bottom:1.2rem; }
+  .rp-sigrow { display:flex;justify-content:space-around;gap:1rem; }
+  .rp-sigcell { display:flex;flex-direction:column;align-items:center;gap:22px;flex:1; }
+  .rp-sigline { width:100%;max-width:160px;border-bottom:1px solid #aab0be; }
+  .rp-siglbl { font-size:11px;color:#5a6070;text-align:center; }
+  .rp-footer { margin-top:1.8rem;padding-top:10px;border-top:1px solid #e2e6ee;display:flex;justify-content:space-between;font-size:10px;color:#9aa0b0; }
+
+  @media print {
+    body > *:not(#printOverlay) { display:none !important; }
+    #printOverlay { position:static !important; background:none !important; display:block !important; overflow:visible !important; }
+    #printToolbar { display:none !important; }
+    #printDoc { box-shadow:none !important; border-radius:0 !important; margin:0 !important; max-width:100% !important; }
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
 </style>
 </head>
 <body>
@@ -497,7 +579,7 @@
     <button class="step-btn" id="step3" disabled onclick="goStep(3)" aria-label="שלב 3">
       <div class="step-num">3</div>תוצאות וניקוד
     </button>
-    <button class="step-btn" id="step4" disabled onclick="goStep(4)" aria-label="שלב 4">
+    <button class="step-btn" id="step4" disabled onclick="unlockAndGoStep(4)" aria-label="שלב 4">
       <div class="step-num">4</div>דו"ח המלצה
     </button>
   </div>
@@ -785,7 +867,7 @@
     </div>
 
     <div class="btn-row">
-      <button class="btn primary" onclick="goStep(4)">
+      <button class="btn primary" onclick="unlockAndGoStep(4)">
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="2" y="1" width="10" height="12" rx="1.5" stroke="white" stroke-width="1.3"/><path d="M4 5h6M4 7.5h6M4 10h3" stroke="white" stroke-width="1.3" stroke-linecap="round"/></svg>
         יצירת דו"ח המלצה לוועדת התמיכות
       </button>
@@ -914,7 +996,7 @@
     </div>
 
     <div class="btn-row">
-      <button class="btn primary" onclick="window.print()">
+      <button class="btn primary" onclick="showPrintReport()">
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="2" y="5" width="10" height="7" rx="1" stroke="white" stroke-width="1.3"/><path d="M4 5V3h6v2" stroke="white" stroke-width="1.3"/><path d="M4 9h6" stroke="white" stroke-width="1.3" stroke-linecap="round"/></svg>
         הדפסה / שמירה כ-PDF
       </button>
@@ -927,7 +1009,7 @@
         בקשה חדשה
       </button>
     </div>
-    <div class="print-note">להדפסה: Ctrl+P / Cmd+P · מומלץ להגדיר "שמור כ-PDF" בדפדפן</div>
+    <div class="print-note">לחץ "הדפסה / שמירה כ-PDF" לתצוגת דו"ח מלאה בחלון נפרד</div>
   </div>
 
 </div>
@@ -937,7 +1019,15 @@
 </footer>
 
 <script>
-  /* ─── STATE ─── */
+  /* ─── PRINT REPORT ─── */
+  function showPrintReport() {
+    document.getElementById('printOverlay').classList.add('visible');
+  }
+  function closePrintOverlay() {
+    document.getElementById('printOverlay').classList.remove('visible');
+  }
+
+
   let unlockedSteps = [1];
   let currentStep = 1;
   let uploadedFileName = '';
@@ -953,10 +1043,11 @@
       else if (i + 1 < n) b.classList.add('done');
     });
     window.scrollTo({ top: 0, behavior: 'smooth' });
-    if (n === 3) animateBars();
+    if (n === 3) { animateBars(); animateCircle(); }
     if (n === 4) {
-      animateCircle();
-      document.getElementById('reportDate').textContent = new Date().toLocaleDateString('he-IL', { day: '2-digit', month: '2-digit', year: 'numeric' });
+      const d = new Date().toLocaleDateString('he-IL', { day: '2-digit', month: '2-digit', year: 'numeric' });
+      document.getElementById('reportDate').textContent = d;
+      document.getElementById('rptDate').textContent = d;
     }
   }
 
@@ -1070,5 +1161,174 @@
     }, 200);
   }
 </script>
+
+<!-- ═══════════════════ PRINT OVERLAY ═══════════════════ -->
+<div id="printOverlay">
+  <div id="printToolbar">
+    <span>📄 דו"ח המלצה — MOP-2026-0047</span>
+    <div style="display:flex;gap:8px">
+      <button class="tbtn tbtn-print" onclick="window.print()">🖨 הדפסה / שמירה כ-PDF</button>
+      <button class="tbtn tbtn-close" onclick="closePrintOverlay()">✕ סגור</button>
+    </div>
+  </div>
+
+  <div id="printDoc">
+    <!-- Header -->
+    <div class="rh">
+      <div class="rh-logo">
+        <svg viewBox="0 0 28 28" fill="none">
+          <rect x="2" y="2" width="10" height="10" rx="2" fill="white" opacity=".9"/>
+          <rect x="16" y="2" width="10" height="10" rx="2" fill="white" opacity=".55"/>
+          <rect x="2" y="16" width="10" height="10" rx="2" fill="white" opacity=".55"/>
+          <rect x="16" y="16" width="10" height="10" rx="2" fill="white" opacity=".9"/>
+        </svg>
+      </div>
+      <div class="rh-title">
+        <h1>דו"ח המלצה לוועדת התמיכות</h1>
+        <p>קול קורא — תמיכה במרכזי מדע וטכנולוגיה בפריפריה ומגה מו"פ אזורי · שנת תקציב 2026</p>
+      </div>
+      <div class="rh-meta">
+        מספר בקשה: <strong>MOP-2026-0047</strong><br>
+        תאריך עיבוד: <strong id="rptDate"></strong><br>
+        מסמך: <strong>ועדה/2026/47</strong>
+      </div>
+    </div>
+    <div class="rp-conf">🔒 מסמך רשמי לשימוש פנימי בלבד — ועדת תמיכות · משרד החדשנות, המדע והטכנולוגיה</div>
+
+    <div class="rp-inner">
+      <!-- Org summary -->
+      <div style="height:1rem"></div>
+      <div class="rp-org">
+        <div class="rp-ocell"><div class="lbl">שם הרשות המגישה</div><div class="val">מרכז מו"פ צפון הנגב — בית יוסף</div></div>
+        <div class="rp-ocell"><div class="lbl">מנהל מדעי</div><div class="val">פרופ׳ דוד לוי</div></div>
+        <div class="rp-ocell"><div class="lbl">סכום תמיכה מבוקש</div><div class="val">₪ 4,200,000</div></div>
+        <div class="rp-ocell"><div class="lbl">ציון איכות כולל</div><div class="val hl">75.7 / 100</div></div>
+      </div>
+      <div class="rp-pill">✓ מומלץ לאישור — בכפוף לתנאים המפורטים להלן</div>
+
+      <!-- Section A: Documents -->
+      <div class="rp-sec">
+        <div class="rp-sec-h">א. בדיקת מסמכי הגשה — סעיפים 28 ו-29(א)</div>
+        <table class="rp-tbl">
+          <thead><tr><th style="width:46%">מסמך</th><th style="width:16%;text-align:center">סטטוס</th><th>הערות</th></tr></thead>
+          <tbody>
+            <tr><td>דיווח מדעי — פעילויות שנת הערכה 2025</td><td style="text-align:center"><span class="rbk ok">הוגש ✓</span></td><td style="color:#5a6070">מסמך מלא, 42 עמודים</td></tr>
+            <tr><td>שאלון מנהל מדעי לשנת הערכה 2025 (Excel)</td><td style="text-align:center"><span class="rbk ok">הוגש ✓</span></td><td style="color:#5a6070">12 לשוניות, 847 שורות נתונים</td></tr>
+            <tr><td>תכנית עבודה מתוקצבת לשנת 2026</td><td style="text-align:center"><span class="rbk ok">הוגש ✓</span></td><td style="color:#5a6070">כולל פירוט תקציבי מלא</td></tr>
+            <tr><td>חסות אקדמית עדכנית</td><td style="text-align:center"><span class="rbk ok">הוגש ✓</span></td><td style="color:#5a6070">אוניברסיטת בן-גוריון, בתוקף עד 2027</td></tr>
+            <tr><td>רשימת הוועד המנהל</td><td style="text-align:center"><span class="rbk ok">הוגש ✓</span></td><td style="color:#5a6070">11 חברים, כולל נציגי רשויות</td></tr>
+            <tr><td>רשימת ועדת מחקר במרכז</td><td style="text-align:center"><span class="rbk miss">לא הוגש ✗</span></td><td style="color:#c0392b;font-weight:600">נדרש בתוך 14 יום</td></tr>
+            <tr><td>הצהרת נהלי שכר וקיום דרגות</td><td style="text-align:center"><span class="rbk ok">הוגש ✓</span></td><td style="color:#5a6070">אושרה על ידי הוועד המנהל</td></tr>
+            <tr><td>נהלי הגנה על ידע, פטנטים ומסחור</td><td style="text-align:center"><span class="rbk par">חלקי ⚠</span></td><td style="color:#b86000">חסר סעיף שיתוף חוקרים בהכנסות</td></tr>
+            <tr><td>נהלי תנאי העסקה וקידום בדרגות</td><td style="text-align:center"><span class="rbk ok">הוגש ✓</span></td><td style="color:#5a6070">מאושר ע"י הוועד ב-01/2026</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Section B: Scores -->
+      <div class="rp-sec">
+        <div class="rp-sec-h">ב. ניקוד לפי תבחינים — שאלון מנהל מדעי</div>
+
+        <div class="rp-sarea">
+          <div class="rp-sh">
+            <div><div class="t">א׳ — מצוינות במחקר יישומי</div><div class="w">משקל: 47% | ציון: 72.4/100</div></div>
+            <div class="s" style="color:#1a3a6b">34.0 נקודות</div>
+          </div>
+          <div class="rp-rows">
+            <div class="rp-row"><span class="l">הכנסות ממחקרים תחרותיים</span><div class="rp-bar"><div class="rp-bf" style="width:82%;background:#1a3a6b"></div></div><span class="v" style="color:#1a3a6b">82/100</span></div>
+            <div class="rp-row"><span class="l">פרסומים מדעיים (Impact Factor)</span><div class="rp-bar"><div class="rp-bf" style="width:74%;background:#1a3a6b"></div></div><span class="v" style="color:#1a3a6b">74/100</span></div>
+            <div class="rp-row"><span class="l">הנחיית סטודנטים</span><div class="rp-bar"><div class="rp-bf" style="width:60%;background:#1a3a6b"></div></div><span class="v" style="color:#1a3a6b">60/100</span></div>
+            <div class="rp-row"><span class="l">הכנסה פר חוקר — מחקר תחרותי</span><div class="rp-bar"><div class="rp-bf" style="width:68%;background:#1a3a6b"></div></div><span class="v" style="color:#1a3a6b">68/100</span></div>
+            <div class="rp-row"><span class="l">פטנטים רשומים</span><div class="rp-bar"><div class="rp-bf" style="width:40%;background:#1a3a6b"></div></div><span class="v" style="color:#1a3a6b">40/100</span></div>
+          </div>
+          <div class="rp-note">5 מענקים תחרותיים · ₪1,800,000 · 12 פרסומים (IF מצטבר: 38.4) · 1 פטנט רשום · 8 סטודנטים מונחים</div>
+        </div>
+
+        <div class="rp-sarea">
+          <div class="rp-sh">
+            <div><div class="t">ב׳ — פיתוח כלכלי-אזורי</div><div class="w">משקל: 45% | ציון: 77.8/100</div></div>
+            <div class="s" style="color:#1a7a4a">35.0 נקודות</div>
+          </div>
+          <div class="rp-rows">
+            <div class="rp-row"><span class="l">הכנסות משיתופי פעולה תעשייתיים</span><div class="rp-bar"><div class="rp-bf" style="width:88%;background:#1a7a4a"></div></div><span class="v" style="color:#1a7a4a">88/100</span></div>
+            <div class="rp-row"><span class="l">כמות שיתופי פעולה פעילים</span><div class="rp-bar"><div class="rp-bf" style="width:79%;background:#1a7a4a"></div></div><span class="v" style="color:#1a7a4a">79/100</span></div>
+            <div class="rp-row"><span class="l">צמיחה בהכנסות שיתופי פעולה (YoY)</span><div class="rp-bar"><div class="rp-bf" style="width:65%;background:#1a7a4a"></div></div><span class="v" style="color:#1a7a4a">65/100</span></div>
+            <div class="rp-row"><span class="l">הכנסה פר חוקר — שיתופי פעולה</span><div class="rp-bar"><div class="rp-bf" style="width:71%;background:#1a7a4a"></div></div><span class="v" style="color:#1a7a4a">71/100</span></div>
+          </div>
+          <div class="rp-note">23 שותפויות פעילות · ₪2,400,000 · +12% צמיחה שנה-על-שנה · 3 עסקאות העברת ידע</div>
+        </div>
+
+        <div class="rp-sarea">
+          <div class="rp-sh">
+            <div><div class="t">ג׳ — פיתוח חברתי-אזורי</div><div class="w">משקל: 8% | ציון: 83.3/100</div></div>
+            <div class="s" style="color:#b86000">6.7 נקודות</div>
+          </div>
+          <div class="rp-rows">
+            <div class="rp-row"><span class="l">קורסים מקצועיים וחוגים מדעיים</span><div class="rp-bar"><div class="rp-bf" style="width:90%;background:#b86000"></div></div><span class="v" style="color:#b86000">90/100</span></div>
+            <div class="rp-row"><span class="l">ליווי תלמידי חטיבה ותיכון</span><div class="rp-bar"><div class="rp-bf" style="width:85%;background:#b86000"></div></div><span class="v" style="color:#b86000">85/100</span></div>
+            <div class="rp-row"><span class="l">כנסים שארגן המרכז</span><div class="rp-bar"><div class="rp-bf" style="width:70%;background:#b86000"></div></div><span class="v" style="color:#b86000">70/100</span></div>
+            <div class="rp-row"><span class="l">אירועי מדע פתוחים לציבור</span><div class="rp-bar"><div class="rp-bf" style="width:78%;background:#b86000"></div></div><span class="v" style="color:#b86000">78/100</span></div>
+          </div>
+          <div class="rp-note">9 חוגים/קורסים · 4 כנסים · 6 אירועי מדע פתוחים · ליווי תלמידים מ-3 מוסדות</div>
+        </div>
+
+        <table class="rp-tbl" style="margin-top:6px">
+          <tr style="background:#f0f4ff">
+            <td style="padding:10px 14px;font-weight:700">סה"כ ציון איכות משוקלל</td>
+            <td style="padding:10px 14px;text-align:center"><span style="background:#1a3a6b;color:#fff;padding:4px 14px;border-radius:12px;font-weight:700">75.7 / 100</span></td>
+            <td style="padding:10px 14px;font-size:12px;color:#5a6070">א׳: 34.0 · ב׳: 35.0 · ג׳: 6.7</td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- Section C: Highlights -->
+      <div class="rp-sec">
+        <div class="rp-sec-h">ג. ביצועים בולטים</div>
+        <div class="rp-hgrid">
+          <div class="rp-hcell"><div class="lbl">מענקי מחקר תחרותיים (2024)</div><div class="val">5 מענקים</div><div class="sub">₪ 1,800,000 סה"כ</div></div>
+          <div class="rp-hcell"><div class="lbl">פרסומים מדעיים (2024)</div><div class="val">12</div><div class="sub">Impact Factor מצטבר: 38.4</div></div>
+          <div class="rp-hcell"><div class="lbl">שיתופי פעולה פעילים</div><div class="val">23</div><div class="sub">₪ 2,400,000 הכנסות</div></div>
+          <div class="rp-hcell"><div class="lbl">חוקרים פעילים (≥50% משרה)</div><div class="val">11</div><div class="sub">מתוכם 2 חוקרים חדשים</div></div>
+          <div class="rp-hcell"><div class="lbl">פטנטים רשומים</div><div class="val">1</div><div class="sub">סטטוס: אושר</div></div>
+          <div class="rp-hcell"><div class="lbl">תמיכת רשויות מקומיות</div><div class="val">₪ 750,000</div><div class="sub">מצטבר בשלוש שנים</div></div>
+        </div>
+      </div>
+
+      <!-- Conditions -->
+      <div class="rp-conds">
+        <h3>⚠ תנאים להשלמה לפני אישור סופי</h3>
+        <ol>
+          <li>הגשת רשימת ועדת המחקר המרכזית — בתוך <strong>14 ימים</strong> מתאריך הדו"ח.</li>
+          <li>השלמת מסמך נהלי הגנה על ידע עם סעיף שיתוף חוקרים בהכנסות ממסחור, כנדרש בסעיף 29(א) לנוהל.</li>
+        </ol>
+      </div>
+
+      <!-- Recommendation -->
+      <div class="rp-rec">
+        <h3>המלצת הצוות המקצועי</h3>
+        <p>על בסיס בדיקת המסמכים המוגשים וניתוח נתוני השאלון למנהל המדעי, הצוות המקצועי <strong>ממליץ לאשר</strong> את הבקשה בכפוף לשני התנאים לעיל.</p>
+        <p style="margin-top:9px">ציון האיכות הכולל של <strong>75.7</strong> ממצב את המרכז בטווח הגבוה בקרב המגישים. בולטים ביצועי תחום ב׳ עם 23 שיתופי פעולה ו-₪2.4M הכנסות, וכן הפעילות החברתית-אזורית שהשיגה 83.3.</p>
+      </div>
+
+      <!-- Signatures -->
+      <div class="rp-sigsec">
+        <div class="rp-sig-title">חתימות מאשרים</div>
+        <div class="rp-sigrow">
+          <div class="rp-sigcell"><div style="height:30px"></div><div class="rp-sigline"></div><div class="rp-siglbl">מנהלת תחום תמיכות</div></div>
+          <div class="rp-sigcell"><div style="height:30px"></div><div class="rp-sigline"></div><div class="rp-siglbl">סמנכ"ל מחקר ופיתוח</div></div>
+          <div class="rp-sigcell"><div style="height:30px"></div><div class="rp-sigline"></div><div class="rp-siglbl">יו"ר ועדת התמיכות</div></div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="rp-footer">
+        <span>מסמך מס׳ ועדה/2026/47 · מערכת קליטת תמיכות 2026</span>
+        <span>סודי — לשימוש פנימי בלבד</span>
+      </div>
+
+    </div><!-- /rp-inner -->
+  </div><!-- /printDoc -->
+</div><!-- /printOverlay -->
+
 </body>
 </html>
