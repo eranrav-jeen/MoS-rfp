@@ -187,7 +187,6 @@
     border-radius: 20px; display: inline-block; margin-top: 12px;
     border: 1px solid var(--border);
   }
-  #fileInput { display: none; }
 
   /* ── BUTTONS ── */
   .btn {
@@ -586,12 +585,7 @@
 
   <!-- ═══════════════════ SCREEN 1: UPLOAD ═══════════════════ -->
   <div class="screen active" id="screen1">
-    <input type="file" id="fileInput" accept=".zip">
-    <div class="upload-zone" id="dropZone"
-         onclick="document.getElementById('fileInput').click()"
-         ondragover="handleDrag(event,true)"
-         ondragleave="handleDrag(event,false)"
-         ondrop="handleDrop(event)">
+    <div class="upload-zone" id="dropZone" onclick="startDemoUpload()">
       <div class="upload-icon">
         <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
           <path d="M15 5v16M8 12l7-7 7 7" stroke="#1a3a6b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -600,11 +594,11 @@
       </div>
       <h2>גרור לכאן את תיק הבקשה (ZIP)</h2>
       <p>יש להגיש את כל מסמכי הבקשה בתיק מרוכז אחד בפורמט ZIP<br>לפי הנדרש בקול הקורא לשנת 2026</p>
-      <button class="btn primary" onclick="event.stopPropagation(); document.getElementById('fileInput').click()">
+      <button class="btn primary" onclick="event.stopPropagation(); startDemoUpload()">
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 2v8M4 6l3-4 3 4" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 11h10" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
         בחירת קובץ ZIP
       </button>
-      <div class="upload-hint">קובץ ZIP בלבד · גודל מקסימלי 200MB</div>
+      <div class="upload-hint">גרסת הדגמה · לחץ כדי להתחיל סימולציה</div>
     </div>
 
     <div class="card" style="margin-top:1.25rem">
@@ -1075,20 +1069,42 @@
   }
 
   /* ─── FILE UPLOAD ─── */
-  document.getElementById('fileInput').addEventListener('change', function () {
-    if (this.files[0]) startProcess(this.files[0]);
-  });
+  /* ─── DEMO UPLOAD SIMULATION ─── */
+  function startDemoUpload() {
+    // Animate the drop zone to look like a file was picked
+    const zone = document.getElementById('dropZone');
+    zone.style.borderColor = 'var(--navy)';
+    zone.style.background  = 'var(--navy-light)';
+    zone.innerHTML = `
+      <div style="display:flex;flex-direction:column;align-items:center;gap:14px;width:100%">
+        <div style="width:52px;height:52px;background:var(--navy-light);border-radius:12px;display:flex;align-items:center;justify-content:center">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><rect x="3" y="2" width="16" height="20" rx="2" stroke="var(--navy)" stroke-width="1.8"/><path d="M7 8h8M7 12h8M7 16h5" stroke="var(--navy)" stroke-width="1.5" stroke-linecap="round"/><path d="M16 2v6h6" stroke="var(--navy)" stroke-width="1.5"/></svg>
+        </div>
+        <div style="font-size:14px;font-weight:600;color:var(--navy)">בקשת_תמיכה_מופ_2026_לדוגמה.zip</div>
+        <div style="width:80%;max-width:340px">
+          <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2);margin-bottom:6px">
+            <span>מעלה קובץ...</span><span id="uploadPct">0%</span>
+          </div>
+          <div style="height:6px;background:var(--surface2);border-radius:3px;overflow:hidden;border:1px solid var(--border)">
+            <div id="uploadBar" style="height:100%;background:var(--navy);border-radius:3px;width:0%;transition:width 0.1s linear"></div>
+          </div>
+        </div>
+        <div style="font-size:12px;color:var(--text2)">47.3 MB</div>
+      </div>`;
 
-  function handleDrag(e, entering) {
-    e.preventDefault();
-    document.getElementById('dropZone').classList.toggle('drag', entering);
-  }
-
-  function handleDrop(e) {
-    e.preventDefault();
-    document.getElementById('dropZone').classList.remove('drag');
-    const file = e.dataTransfer.files[0];
-    if (file) startProcess(file);
+    // Animate upload bar 0→100% over ~1.4s
+    let pct = 0;
+    const iv = setInterval(() => {
+      pct = Math.min(pct + 4, 100);
+      const bar = document.getElementById('uploadBar');
+      const lbl = document.getElementById('uploadPct');
+      if (bar) bar.style.width = pct + '%';
+      if (lbl) lbl.textContent = pct + '%';
+      if (pct >= 100) {
+        clearInterval(iv);
+        setTimeout(() => startProcess(null), 300);
+      }
+    }, 55);
   }
 
   function startProcess(file) {
